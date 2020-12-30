@@ -26,4 +26,4 @@ try{
 
 
        Set-Location $PSScriptRoot
-        Invoke-UnixLineEndings -Directory ..
+       Invoke-UnixLineEndings -Directory ..
