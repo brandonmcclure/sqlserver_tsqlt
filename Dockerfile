@@ -10,7 +10,6 @@ LABEL maintainer="brandonmcclure89@gmail.com" Description="A base image for runn
  # Install Unzip
 RUN apt-get update \
     && apt-get install unzip -y
-
 # Install SQLPackage for Linux and make it executable
 RUN wget -progress=bar:force -q -O sqlpackage.zip https://go.microsoft.com/fwlink/?linkid=873926 \
     && unzip -qq sqlpackage.zip -d /opt/sqlpackage \
@@ -18,20 +17,23 @@ RUN wget -progress=bar:force -q -O sqlpackage.zip https://go.microsoft.com/fwlin
 
 # pwsh
 RUN apt-get install -y wget apt-transport-https \
-&& wget -q https://packages.microsoft.com/config/ubuntu/16.04/packages-microsoft-prod.deb \
+&& . /etc/os-release \
+$$ echo $VERSION_ID \
+&& wget -q https://packages.microsoft.com/config/ubuntu/$VERSION_ID/packages-microsoft-prod.deb \
 && dpkg -i packages-microsoft-prod.deb \
 && apt-get update \
 && apt-get install -y powershell
 
 # create directory within SQL container for database files
-RUN /bin/mkdir -p /var/opt/mssql/backup
-RUN /bin/mkdir -p /var/opt/mssql/dbfiles
+RUN /bin/mkdir -p /var/opt/mssql/backup \
+&& /bin/mkdir -p /var/opt/mssql/dbfiles
 
 COPY entrypoint.sh /
 COPY init.sh /
 COPY tSQLtInstall/ /tSQLtInstall/
 COPY installTSQLT.ps1 /
 
+USER 10001:0
 ENV SA_PASSWORD=$CD_SA_PASSWORD
  
  EXPOSE 1433

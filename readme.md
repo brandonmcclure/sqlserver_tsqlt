@@ -8,12 +8,22 @@ Run `make` to download the latest tSQLt release from [their website](http://tsql
 ## Set your own SA Password:
 Create a User scoped enviornment variable, as a secure string
 ```
-[System.Environment]::SetEnvironmentVariable("SA_PASSWORD",("d0ckerSA" | ConvertTo-SecureString -AsPlaintext | ConvertFrom-SecureString),"User")
+[System.Environment]::SetEnvironmentVariable("SA_PASSWORD",("WeakP@ssword" | ConvertTo-SecureString -AsPlaintext | ConvertFrom-SecureString),"User")
 ```
 # How to use
+You can run as is with: `docker run -d -p 1433:1433 -e ACCEPT_EULA="Y" --name=$(projectName) $(registry)$(repository)$(projectName)_$(sqltag):latest`
+
+## Useing this image as a base
+See my [adventure works]() example.
+
 
 
 You can install tsqlt to a new isntance by running the following docker exec:
 ```
-docker exec sqlserver pwsh -f '/installTSQLT.ps1' -db 'YourDBName' -sa_password 'YourSAPassword'
+docker exec sqlserver_tsqlt pwsh -f /installTSQLT.ps1 -db 'container_test' -sa_password "$([Environment]::GetEnvironmentVariable('SA_PASSWORD', 'User') | ConvertTo-SecureString | ConvertFrom-SecureString -AsPlainText)"
+```
+
+Or embed it into a custom Docker image via a custom init.sh script:
+```
+pwsh -f /installTSQLT.ps1 -db 'Clarity_Custom_DEV00' -sa_password $SA_PASSWORD
 ```

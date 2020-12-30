@@ -16,16 +16,16 @@ Describe "sqlserver image"{
             Write-Verbose "Creating test DB"
             Invoke-Sqlcmd -server 127.0.0.1 -database 'master' -Username 'sa' -password ([Environment]::GetEnvironmentVariable("SA_PASSWORD", "User") | ConvertTo-SecureString | ConvertFrom-SecureString -AsPlainText) -InputFile "$PSScriptRoot\newTestDB.sql"
         }
-        AfterAll{
-            Write-Verbose "Deleting test DB"
-            Invoke-Sqlcmd -server 127.0.0.1 -database 'master' -Username 'sa' -password ([Environment]::GetEnvironmentVariable("SA_PASSWORD", "User") | ConvertTo-SecureString | ConvertFrom-SecureString -AsPlainText) -query "DROP DATABASE IF EXISTS container_test;"
-        }
+        # AfterAll{
+        #     Write-Verbose "Deleting test DB"
+        #     Invoke-Sqlcmd -server 127.0.0.1 -database 'master' -Username 'sa' -password ([Environment]::GetEnvironmentVariable("SA_PASSWORD", "User") | ConvertTo-SecureString | ConvertFrom-SecureString -AsPlainText) -query "DROP DATABASE IF EXISTS container_test;"
+        # }
         it 'can installTSQLt'{
             
             
 
             $EXEPath = "docker"
-            $options = "exec sqlserver pwsh -f /installTSQLT.ps1 -db 'container_test' -sa_password '$([Environment]::GetEnvironmentVariable("SA_PASSWORD", "User") | ConvertTo-SecureString | ConvertFrom-SecureString -AsPlainText)'"
+            $options = "exec sqlserver_tsqlt pwsh -f /installTSQLT.ps1 -db 'container_test' -sa_password $([Environment]::GetEnvironmentVariable('SA_PASSWORD', 'User') | ConvertTo-SecureString | ConvertFrom-SecureString -AsPlainText)"
         
             $return = Start-MyProcess -EXEPath  $EXEPath -options $options
 
@@ -39,7 +39,7 @@ Describe "sqlserver image"{
 
 
             $EXEPath = "docker"
-            $options = "exec sqlserver pwsh -c `"'hello world'`""
+            $options = "exec sqlserver_tsqlt pwsh -c `"'hello world'`""
         
             $return = Start-MyProcess -EXEPath  $EXEPath -options $options
 
