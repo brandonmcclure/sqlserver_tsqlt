@@ -33,7 +33,6 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
           Install-Module -Name fc_core -Force -Verbose -Scope CurrentUser
     - task: PowerShell@2
       displayName: Run Setup Script
