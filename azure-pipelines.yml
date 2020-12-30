@@ -34,6 +34,7 @@ stages:
         targetType: 'inline'
         script: |
           Install-Module -Name fc_core -Force -Verbose -Scope CurrentUser
+          Get-Command -Module FC_core
     - task: PowerShell@2
       displayName: Run Setup Script
       inputs:
