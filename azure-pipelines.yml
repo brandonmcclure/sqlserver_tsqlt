@@ -29,16 +29,13 @@ stages:
     - checkout: self
 
     - task: PowerShell@2
-      displayName: 'Install Modules'
+      displayName: 'Run Setup script'
       inputs:
         targetType: 'inline'
         script: |
-          Install-Module -Name fc_core -Force -Verbose -Scope CurrentUser
-          Get-Command -Module FC_core
-    - task: PowerShell@2
-      displayName: Run Setup Script
-      inputs:
-        filePath: 'build/Setup.ps1'
+          Install-Module -Name fc_core -Force -Verbose -Scope CurrentUser;
+          Get-Command -Module FC_core;
+          build/Setup.ps1
     - task: CopyFiles@2
       inputs:
         SourceFolder: ''
