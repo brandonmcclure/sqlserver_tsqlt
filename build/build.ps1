@@ -1,7 +1,7 @@
 #Requires -version 7
 param(
     [parameter(Position=0)]$registry
-,[parameter(Position=1)]$repository = ""
+,[parameter(Position=1)]$repository = "bmcclure89/"
 ,[parameter(Position=2)][STRING[]]$SQLtagNames = '2017-latest'
 ,[parameter(Position=3)][securestring]$SAPassword
 ,[parameter(Position=4)][bool]$isLatest = $true
@@ -32,13 +32,14 @@ foreach($SQLtagName in $SQLtagNames){
         Write-Log "SQLtagname: $sqltagName"
     $buildArgs = @{ 
         CD_SA_PASSWORD="$($SAPassword | ConvertFrom-SecureString -AsPlainText)"; 
-        IMAGE="mcr.microsoft.com/mssql/server:$SQLtagName";
+        IMAGE="mcr.microsoft.com/mssql/server:$($SQLtagName.ToLower())";
 }
-    $imageName = "$((Split-Path $workingDir -Leaf).ToLower())_$SQLtagName"
+    $imageName = "$((Split-Path $workingDir -Leaf).ToLower())"
     Invoke-DockerImageBuild  -registry $registry `
     -repository $repository `
     -imageName $imageName `
     -buildArgs $buildArgs `
+    -tagPrefix "$($SQLtagName)_" `
     -isLatest $isLatest `
      -logLevel 'Debug' `
     -workingDir $workingDir

@@ -25,5 +25,10 @@ docker exec sqlserver_tsqlt pwsh -f /installTSQLT.ps1 -db 'container_test' -sa_p
 
 Or embed it into a custom Docker image via a custom init.sh script:
 ```
-pwsh -f /installTSQLT.ps1 -db 'Clarity_Custom_DEV00' -sa_password $SA_PASSWORD
+pwsh -f /installTSQLT.ps1 -db 'myDB' -sa_password $SA_PASSWORD
+```
+
+# Build for multiple tags
+```
+make build_2019-CU8-ubuntu-18.04 build_2019-CU8-ubuntu-16.04 build_2017-cu19-ubuntu
 ```

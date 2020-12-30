@@ -2,11 +2,12 @@ projectName := sqlserver_tsqlt# This should be the folder name this Makefile is 
 # https://stackoverflow.com/questions/2004760/get-makefile-directory
 registry := 
 repository := bmcclure89/
-sqltag := 2017-latest
+sqltag := 2019-latest
 
 SHELL := pwsh.exe
 .SHELLFLAGS := -noprofile -command
 
+.PHONY: build
 # All target is the default/what is run if you just type 'make'. It should get a developer up and running as quick as possible. 
 all: setup build
 
@@ -15,20 +16,24 @@ setup:
 	@./build/Setup.ps1
 
 #  Build: should build the project. In the case of docker this should build/tag the images in a consistent method. It has a preq on the setup target. So if you run 'make build' the setup target/script will run as well automatically. 
-build: setup
+build: 
 	./build/build.ps1 -registry '$(registry)' -repository '$(repository)' -SQLtagNames '$(sqltag)'
 
-run: build
-	@docker run -d -p 1433:1433 --name=$(projectName) $(registry)$(repository)$(projectName)_$(sqltag):latest
+build_%: 
+	./build/build.ps1 -registry '$(registry)' -repository '$(repository)' -SQLtagNames $*
+
+run: 
+	@docker run -d -p 1433:1433 -e ACCEPT_EULA=Y --name=$(projectName) $(registry)$(repository)$(projectName):$(sqltag)
 
 test: run
 	Invoke-Pester ./tests/
 
 Install_tsqlt_to_%:
-	docker exec $(projectName) /InstallTSQLT.ps1 -db '$*' sa_password 'weakP@ssword'
+	docker exec $(projectName) pwsh -f /installTSQLT.ps1 -db "$*" -sa_password "$([Environment]::GetEnvironmentVariable('SA_PASSWORD', 'User') | ConvertTo-SecureString | ConvertFrom-SecureString -AsPlainText)"
 
 # clean: up after yourself. I have itty bitty storage on my development machine, so I need to make sure I reclaim as much space as possible! 
 clean:
 	-@docker stop $(projectName)
 	-@docker rm -v $(projectName)
+clean_envvars:
 	-[Environment]::SetEnvironmentVariable("SA_PASSWORD","", "User")
