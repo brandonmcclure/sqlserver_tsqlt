@@ -2,8 +2,10 @@
 # I am not explicitly adding this so that our CI never builds an image that we do not explicitly tell it.
 ARG IMAGE 
 FROM $IMAGE
-USER root
+USER 0:0
 ARG CD_SA_PASSWORD
+
+LABEL maintainer="brandonmcclure89@gmail.com" Description="A base image for running tSQLt unit tests on SQL server" 
 
  # Install Unzip
 RUN apt-get update \
@@ -30,7 +32,6 @@ COPY init.sh /
 COPY tSQLtInstall/ /tSQLtInstall/
 COPY installTSQLT.ps1 /
 
-ENV ACCEPT_EULA="Y"
 ENV SA_PASSWORD=$CD_SA_PASSWORD
  
  EXPOSE 1433

@@ -1,6 +1,17 @@
-This is the base image that I use to deploy dacpacs and run unit tests. Run `make` to download the latest tSQLt release from [their website](http://tsqlt.org/download/tsqlt/) and build the docker image. 
+This is the base image that I use to deploy dacpacs and run unit tests. This image is in no way affiliated with Microsoft or the tSQLt project.
 
-I use pwsh core to run the setup, so that is a prereq before you can build the image
+# Setup/build
+You need pwsh core and gnu make
+
+Run `make` to download the latest tSQLt release from [their website](http://tsqlt.org/download/tsqlt/) and build the docker image. 
+
+## Set your own SA Password:
+Create a User scoped enviornment variable, as a secure string
+```
+[System.Environment]::SetEnvironmentVariable("SA_PASSWORD",("d0ckerSA" | ConvertTo-SecureString -AsPlaintext | ConvertFrom-SecureString),"User")
+```
+# How to use
+
 
 You can install tsqlt to a new isntance by running the following docker exec:
 ```
