@@ -36,6 +36,7 @@ stages:
           Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
           Install-Module -Name fc_core -Force -Verbose -Scope CurrentUser
     - task: PowerShell@2
+      displayName: Run Setup Script
       inputs:
         filePath: 'build/Setup.ps1'
     - task: CopyFiles@2
