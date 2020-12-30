@@ -30,7 +30,7 @@ stages:
     - task: PowerShell@2
       inputs:
         targetType: 'inline'
-        script: 'Get-Location; Get-ChildItem'
+        script: 'Install-Module FC_Core'
     - task: PowerShell@2
       inputs:
         filePath: 'build/Setup.ps1'
