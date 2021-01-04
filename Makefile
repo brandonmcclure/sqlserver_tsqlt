@@ -16,7 +16,7 @@ setup:
 	@./build/Setup.ps1
 
 #  Build: should build the project. In the case of docker this should build/tag the images in a consistent method. It has a preq on the setup target. So if you run 'make build' the setup target/script will run as well automatically. 
-build: 
+build: setup
 	./build/build.ps1 -registry '$(registry)' -repository '$(repository)' -SQLtagNames '$(sqltag)'
 
 build_%: 
