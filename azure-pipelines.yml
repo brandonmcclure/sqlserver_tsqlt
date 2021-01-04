@@ -27,7 +27,17 @@ stages:
       vmImage: 'ubuntu-latest'
     steps:
     - checkout: self
-    
+
+    - task: PowerShell@2
+      displayName: 'Run Setup script'
+      inputs:
+        targetType: 'inline'
+        script: |
+          Install-Module -Name fc_core -Force -Verbose -Scope CurrentUser;
+          Import-Module fc_core;
+          get-module fc_core;
+          Get-Command -Module fc_core;
+          build/Setup.ps1
     - task: CopyFiles@2
       inputs:
         SourceFolder: ''
@@ -55,10 +65,13 @@ stages:
           inputs:
             containerRegistry: 'Docker Hub'
             command: 'login'
-        - template: 'Steps/Build-DockerMultiArchImage.yml@templates'
-          parameters: 
-            appName: docker-bfg
-            platforms: linux/amd64
+        - task: PowerShell@2
+          inputs:
+            targetType: 'inline'
+            script: 'install-module FC_Docker'
+        - task: PowerShell@2
+          inputs:
+            filePath: 'build/Build.ps1'
         - task: Docker@2
           inputs:
             containerRegistry: 'Docker Hub'
