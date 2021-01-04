@@ -24,6 +24,36 @@ try{
 
   Expand-Archive -Path "$projectRoot\tsqlt.zip" -DestinationPath "$projectRoot\tSQLtInstall" -Force
 
-
+  $myTSQLTExtension = "EXEC sp_configure 'clr enabled', 1;  
+  RECONFIGURE;  
+  GO  
+  
+  CREATE TABLE [tSQLt].[DebugTests]
+  (
+      [IsDebug] bit not null default 1,
+      constraint PK_T1 PRIMARY KEY ([IsDebug]),
+       constraint CK_T1_Locked CHECK ([IsDebug]=1)
+  )
+  go
+  
+  
+  create procedure tSQLt.DebugEnter
+  as
+  begin
+      insert into [tSQLt].[DebugTests]
+      select coalesce(IsDebug,1) from [tSQLt].[DebugTests] where IsDebug = 1
+  end
+  go
+  
+  create procedure tSQLt.DebugExit
+  as
+  begin
+      truncate table [tSQLt].[DebugTests]
+  end
+  go"
+  
+  $myTSQLTExtension | Set-Content $projectRoot\tSQLtInstall\myTSQLTExtension.sql
+  
        Set-Location $PSScriptRoot
        Invoke-UnixLineEndings -Directory ..
+ 
