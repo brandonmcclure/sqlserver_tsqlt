@@ -35,7 +35,9 @@ stages:
         script: |
           Install-Module -Name fc_core -Force -Verbose -Scope CurrentUser;
           Import-Module fc_core;
+          Write-Host "Get-Module"
           get-module fc_core;
+          Write-Host "Get-command"
           Get-Command -Module fc_core;
           build/Setup.ps1
     - task: CopyFiles@2
