@@ -2,7 +2,7 @@
 param(
     [parameter(Position=0)]$registry
 ,[parameter(Position=1)]$repository = "bmcclure89/"
-,[parameter(Position=2)][STRING[]]$SQLtagNames = '2017-latest'
+,[parameter(Position=2)][STRING[]]$SQLtagNames = '2019-CU8-ubuntu-18.04'
 ,[parameter(Position=3)][securestring]$SAPassword
 ,[parameter(Position=4)][bool]$isLatest = $true
 ,[parameter(Position=5)]$workingDir = (Split-Path $PSScriptRoot -parent)
@@ -32,7 +32,7 @@ foreach($SQLtagName in $SQLtagNames){
         Write-Log "SQLtagname: $sqltagName"
     $buildArgs = @{ 
         CD_SA_PASSWORD="$($SAPassword | ConvertFrom-SecureString -AsPlainText)"; 
-        IMAGE="mcr.microsoft.com/mssql/server:$($SQLtagName.ToLower())";
+        IMAGE="mcr.microsoft.com/mssql/server:$($SQLtagName)";
 }
     $imageName = "$((Split-Path $workingDir -Leaf).ToLower())"
     Invoke-DockerImageBuild  -registry $registry `
