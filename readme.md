@@ -30,7 +30,7 @@ pwsh -f /installTSQLT.ps1 -db 'myDB' -sa_password $SA_PASSWORD
 
 # Build for multiple tags
 ```
-make build_2019-CU8-ubuntu-18.04 build_2019-CU8-ubuntu-16.04 build_2017-cu19-ubuntu
+make build_2019-GDR2-ubuntu-16.04 build_2017-cu19-ubuntu
 ```
 
 # Microsoft Tags

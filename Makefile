@@ -19,12 +19,13 @@ setup:
 build: setup
 	./build/build.ps1 -registry '$(registry)' -repository '$(repository)' -SQLtagNames '$(sqltag)'
 
-build_%: 
+build_%: setup
 	./build/build.ps1 -registry '$(registry)' -repository '$(repository)' -SQLtagNames $*
 
 run: 
-	@docker run -d -p 1433:1433 -e ACCEPT_EULA=Y --name=$(projectName) $(registry)$(repository)$(projectName):$(sqltag)
-
+	@docker run -d -p 1434:1433 -e ACCEPT_EULA=Y --name=$(projectName) $(registry)$(repository)$(projectName):$(sqltag)
+save_%:
+	docker save -o $*.tar $(registry)$(repository)$(projectName):$*_latest
 test: run
 	Invoke-Pester ./tests/
 
