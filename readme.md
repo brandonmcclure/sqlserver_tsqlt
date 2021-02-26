@@ -34,4 +34,4 @@ make build_2019-GDR2-ubuntu-16.04 build_2017-cu19-ubuntu
 ```
 
 # Microsoft Tags
-https://mcrflowprodcentralus.data.mcr.microsoft.com/mcrprod/mssql/server?P1=1609435282&P2=1&P3=1&P4=QruUIrFFizDrrrFcA9Ai06m3dEyvDqtLoAACOLiryt4%3D&se=2020-12-31T17%3A21%3A22Z&sig=DzRw9mpySDQbqYO3ESuZDssJN9xVemgOF7RVk2z3HlI%3D&sp=r&sr=b&sv=2015-02-21
+https://mcr.microsoft.com/v2/mssql/server/tags/list
