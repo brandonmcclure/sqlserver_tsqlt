@@ -11,7 +11,7 @@ LABEL maintainer="brandonmcclure89@gmail.com" Description="A base image for runn
 RUN apt-get update \
     && apt-get install unzip -y
 # Install SQLPackage for Linux and make it executable
-RUN wget -progress=bar:force -q -O sqlpackage.zip https://go.microsoft.com/fwlink/?linkid=873926 \
+RUN wget -progress=bar:force -q -O sqlpackage.zip https://go.microsoft.com/fwlink/?linkid=2134311 \
     && unzip -qq sqlpackage.zip -d /opt/sqlpackage \
     && chmod +x /opt/sqlpackage/sqlpackage
 
