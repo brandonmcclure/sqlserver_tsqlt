@@ -1,6 +1,6 @@
 # Default image is: mcr.microsoft.com/mssql/server:2017-CU8-ubuntu
 # I am not explicitly adding this so that our CI never builds an image that we do not explicitly tell it.
-ARG IMAGE 
+ARG IMAGE=mcr.microsoft.com/mssql/server:2019-GDR2-ubuntu-16.04
 FROM $IMAGE
 USER 0:0
 ARG CD_SA_PASSWORD
