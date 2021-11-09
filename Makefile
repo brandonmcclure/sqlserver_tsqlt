@@ -29,10 +29,10 @@ build_%: setup
 	./build/build.ps1 -registry '$(REGISTRY_NAME)' -repository '$(REPOSITORY_NAME)' -SQLtagNames $*
 
 run: 
-	@docker run -d -p 1434:1433 -e ACCEPT_EULA=Y --name=$(IMAGE_NAME) $(REGISTRY_NAME)$(REPOSITORY_NAME)$(IMAGE_NAME):$(sqltag)
+	@docker run -d -p 1433:1433 -e ACCEPT_EULA=Y --name=$(IMAGE_NAME) $(REGISTRY_NAME)$(REPOSITORY_NAME)$(IMAGE_NAME):$(sqltag)
 save_%:
 	docker save -o $*.tar $(REGISTRY_NAME)$(REPOSITORY_NAME)$(IMAGE_NAME):$*_latest
-test: run
+test:
 	Invoke-Pester ./tests/
 
 Install_tsqlt_to_%:
