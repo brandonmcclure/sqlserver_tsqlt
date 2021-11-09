@@ -1,21 +1,47 @@
-
-Try{
-    Import-Module ./TestFunctions.psm1, sqlserver, fc_core -ErrorAction Stop
-}
-catch{$tryAgain =$true}
-if($tryAgain)
-{
-    Import-Module ./tests/TestFunctions.psm1,sqlserver, fc_core -ErrorAction Stop
-}
 Describe "sqlserver image"{
-    Context "Image"{
-        BeforeAll{
-            Write-Verbose "Deleting test DB"
-            Invoke-Sqlcmd -server 127.0.0.1 -database 'master' -Username 'sa' -password ([Environment]::GetEnvironmentVariable("SA_PASSWORD", "User") | ConvertTo-SecureString | ConvertFrom-SecureString -AsPlainText) -query "DROP DATABASE IF EXISTS container_test;"
+    
+    afterAll{
+        $dockerName = 'sqlserver_tsqlt'
+        
+        docker stop $dockerName | out-null
+            docker rm $dockerName | out-null
+    }
+    BeforeAll{
+        Remove-Module DBATools, fc_core -Force -ErrorAction SilentlyContinue | Out-Null
+        Import-Module DBATools, fc_core -ErrorAction Stop
+        . "$PSScriptRoot/TestFunctions.ps1"
+
+        $dockerName = 'sqlserver_tsqlt'
+        $saPassword = 'we@kPassw0rd'
             
-            Write-Verbose "Creating test DB"
-            Invoke-Sqlcmd -server 127.0.0.1 -database 'master' -Username 'sa' -password ([Environment]::GetEnvironmentVariable("SA_PASSWORD", "User") | ConvertTo-SecureString | ConvertFrom-SecureString -AsPlainText) -InputFile "$PSScriptRoot\newTestDB.sql"
+            docker stop $dockerName | out-null
+            docker rm $dockerName | out-null
+        docker run -d -p 1433:1433 -e ACCEPT_EULA=Y --name=$dockerName bmcclure89/sqlserver_tsqlt:2019-gdr2-ubuntu-16.04.main
+
+        $queryOptions = @{
+            database = "master";
+            
         }
+         $queryOptions += @{SqlInstance = '127.0.0.1' }  
+         $sqlAuthPass = ConvertTo-SecureString -AsPlainText -Force -String $saPassword
+    if ([string]::IsNullOrEmpty($sqlAuthPass)) {
+        $creds = Get-Credential -Username 'sa' -Message 'enter the local container sql auth' -Title 'hey, need your password'
+    }
+    else {
+        $creds = $(New-Object System.Management.Automation.PSCredential ('sa', $sqlAuthPass))
+    }
+    $queryOptions += @{SqlCredential = $creds }
+
+    sleep 5
+        Write-Verbose "Deleting test DB"
+        Invoke-dbaquery -query "DROP DATABASE IF EXISTS container_test;" @queryOptions
+        
+        Write-Verbose "Creating test DB"
+        Invoke-dbaquery -InputFile "$PSScriptRoot\newTestDB.sql" @queryOptions
+    }
+
+    Context "Image"{
+        
         # AfterAll{
         #     Write-Verbose "Deleting test DB"
         #     Invoke-Sqlcmd -server 127.0.0.1 -database 'master' -Username 'sa' -password ([Environment]::GetEnvironmentVariable("SA_PASSWORD", "User") | ConvertTo-SecureString | ConvertFrom-SecureString -AsPlainText) -query "DROP DATABASE IF EXISTS container_test;"
@@ -25,8 +51,9 @@ Describe "sqlserver image"{
             
 
             $EXEPath = "docker"
-            $options = "exec sqlserver_tsqlt pwsh -f /installTSQLT.ps1 -db 'container_test' -sa_password $([Environment]::GetEnvironmentVariable('SA_PASSWORD', 'User') | ConvertTo-SecureString | ConvertFrom-SecureString -AsPlainText)"
+            $options = "exec $dockerName pwsh -f /installTSQLT.ps1 -db container_test -sa_password `"$saPassword`" -verbose"
         
+            Write-Verbose $options
             $return = Start-MyProcess -EXEPath  $EXEPath -options $options
 
                 $return.stdout
@@ -39,13 +66,15 @@ Describe "sqlserver image"{
 
 
             $EXEPath = "docker"
-            $options = "exec sqlserver_tsqlt pwsh -c `"'hello world'`""
+            $options = "exec $dockerName pwsh -c `"'hello world'`""
         
             $return = Start-MyProcess -EXEPath  $EXEPath -options $options
 
-                $return.stdout
+                
             
             if (-not [string]::IsNullOrEmpty($return.stderr) -or $return.stdout -like '*failed*'){
+                Write-Warning "Output: $($return.stdout)"
+                Write-Warning "Error: $($return.sterr)"
                 Write-Error "$($return.sterr)" -ErrorAction Stop
             }
         }
