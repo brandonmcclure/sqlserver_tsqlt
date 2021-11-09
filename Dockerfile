@@ -28,12 +28,13 @@ $$ echo $VERSION_ID \
 RUN /bin/mkdir -p /var/opt/mssql/backup \
 && /bin/mkdir -p /var/opt/mssql/dbfiles
 
-COPY entrypoint.sh /
-COPY init.sh /
-COPY tSQLtInstall/ /tSQLtInstall/
-COPY installTSQLT.ps1 /
-
 USER 10001:0
+
+COPY --chown=10001:0 entrypoint.sh /usr/bin
+COPY --chown=10001:0 init.sh /usr/bin
+COPY --chown=10001:0 tSQLtInstall/ /tSQLtInstall/
+COPY --chown=10001:0 installTSQLT.ps1 /usr/bin
+
 ENV SA_PASSWORD=$CD_SA_PASSWORD
  
  EXPOSE 1433
@@ -41,4 +42,4 @@ HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=10 \
    CMD /opt/mssql-tools/bin/sqlcmd -S localhost -d master -V16 -U sa -P $SA_PASSWORD -Q "SELECT 1" || exit 1
 
 
-CMD /bin/bash ./entrypoint.sh
+CMD /bin/bash /usr/bin/entrypoint.sh

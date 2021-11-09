@@ -59,6 +59,9 @@ Describe "sqlserver image"{
                 $return.stdout
             
             if (-not [string]::IsNullOrEmpty($return.stderr) -or $return.stdout -like '*failed*'){
+                Write-Warning "$($return.stdout)"
+                Write-Warning "$($return.sterr)"
+                Write-Warning "There was an error from the docker call"
                 throw "$($return.sterr)"
             }
         }
